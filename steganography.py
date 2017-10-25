@@ -16,7 +16,15 @@ def decode_image(file_location="images/encoded_sample.png"):
     decoded_image = Image.new("RGB", encoded_image.size)
     pixels = decoded_image.load()
 
-    pass #TODO: Fill in decoding functionality
+    pixels2 = red_channel.load()
+    print(pixels2[0, 0])
+
+    for x in range(x_size):
+        for y in range(y_size):
+            if pixels2[x , y] % 2 == 1:
+                pixels[x , y] = (0,0,0)
+            else:
+                pixels[x , y] = (255,255,255)
 
     decoded_image.save("images/decoded_image.png")
 
@@ -43,11 +51,43 @@ def encode_image(text_to_encode, template_image="images/samoyed.jpg"):
     text_to_encode: the text to encode into the template image
     template_image: the image to use for encoding. An image is provided by default.
     """
-    pass #TODO: Fill out this function
+    unencoded_image = Image.open(template_image)
+    red_channel = unencoded_image.split()[0]
+    green_channel = unencoded_image.split()[1]
+    blue_channel = unencoded_image.split()[2]
+
+    unencoded_pixels_r = red_channel.load()
+    unencoded_pixels_g = green_channel.load()
+    unencoded_pixels_b = blue_channel.load()
+
+    x_size = unencoded_image.size[0]
+    y_size = unencoded_image.size[1]
+
+    encode_image = Image.new("RGB", unencoded_image.size)
+    pixels = encode_image.load()
+
+    hidden_text_image = write_text(text_to_encode,(x_size, y_size))
+    red_channel_hidden = hidden_text_image.split()[0]
+    hidden_pixels = red_channel_hidden.load()
+
+    for x in range(x_size):
+        for y in range(y_size):
+            if hidden_pixels[x,y] == 0:
+                if unencoded_pixels_r[x,y] % 2 == 1:
+                    pixels[x,y] = (unencoded_pixels_r[x,y] - 1, unencoded_pixels_g[x,y], unencoded_pixels_b[x,y])
+                else:
+                    pixels[x,y] = (unencoded_pixels_r[x,y], unencoded_pixels_g[x,y], unencoded_pixels_b[x,y])
+            else:
+                if unencoded_pixels_r[x,y] % 2 == 0:
+                    pixels[x,y] = (unencoded_pixels_r[x,y] - 1, unencoded_pixels_g[x,y], unencoded_pixels_b[x,y])
+                else:
+                    pixels[x,y] = (unencoded_pixels_r[x,y], unencoded_pixels_g[x,y], unencoded_pixels_b[x,y])
+
+    encode_image.save("images/encode_image.png")
 
 if __name__ == '__main__':
-    print("Decoding the image...")
-    decode_image()
-
     print("Encoding the image...")
-    encode_image()
+    encode_image("Tony is an awesome NINJA!!")
+
+    print("Decoding the image...")
+    decode_image("images/encode_image.png")
