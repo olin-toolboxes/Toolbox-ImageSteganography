@@ -15,8 +15,11 @@ def decode_image(file_location="images/encoded_sample.png"):
 
     decoded_image = Image.new("RGB", encoded_image.size)
     pixels = decoded_image.load()
+    for i in range(x_size):
+        for j in range(y_size):
+            pixels[i, j] = 255*(red_channel.getpixel((i,j))%2)
 
-    pass #TODO: Fill in decoding functionality
+    # pass #TODO: Fill in decoding functionality
 
     decoded_image.save("images/decoded_image.png")
 
@@ -43,11 +46,30 @@ def encode_image(text_to_encode, template_image="images/samoyed.jpg"):
     text_to_encode: the text to encode into the template image
     template_image: the image to use for encoding. An image is provided by default.
     """
-    pass #TODO: Fill out this function
+
+    decoded_image = Image.open(template_image)
+    text_image = write_text(text_to_encode,decoded_image.size)
+    # red_channel = decoded_image.split()[0]
+
+    x_size = decoded_image.size[0]
+    y_size = decoded_image.size[1]
+
+    encoded_image = Image.new("RGB", decoded_image.size)
+    pixels = encoded_image.load()
+    for i in range(x_size):
+        for j in range(y_size):
+            red = decoded_image.getpixel((i,j))[0]
+            green = decoded_image.getpixel((i,j))[1]
+            blue = decoded_image.getpixel((i,j))[2]
+            if text_image.getpixel((i,j))[0] > 1:
+                pixels[i, j] = (2*(red//2), green, blue)
+            else:
+                pixels[i, j] = (2*(red//2)+1, green, blue)
+    encoded_image.save("images/encoded_image.png")
 
 if __name__ == '__main__':
     print("Decoding the image...")
     decode_image()
 
     print("Encoding the image...")
-    encode_image()
+    encode_image('Hello!')
