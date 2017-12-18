@@ -3,4 +3,4 @@
 
 Image Steganography toolbox starter code.
 
-Full instructions at https://sd17spring.github.io//toolboxes/image-steganography/
+Instructions are on [the toolbox page](https://toolboxes.olin.build/image-steganography/).
